@@ -1,0 +1,13 @@
+{
+  "name": "webcontainers",
+  "version": "1.0.0",
+  "description": "Node.js webcontainers application",
+  "main": "index.js",
+  "scripts": {
+    "start": "vite"
+  },
+  "dependencies": {
+    "@webcontainer/api": "^1.0.2",
+    "vite": "^4.1.0"
+  }
+}
