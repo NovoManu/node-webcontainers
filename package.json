@@ -4,7 +4,8 @@
   "description": "Node.js webcontainers application",
   "main": "index.js",
   "scripts": {
-    "start": "vite"
+    "start": "npm run prepare && vite",
+    "prepare": "node ./autoloader.js"
   },
   "dependencies": {
     "@webcontainer/api": "^1.0.2",
