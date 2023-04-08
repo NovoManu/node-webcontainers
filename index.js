@@ -1,34 +1,36 @@
 import {WebContainer} from '@webcontainer/api'
 import {files} from "./files"
+import {Terminal} from "xterm"
+import 'xterm/css/xterm.css'
 
 const iframe = document.querySelector('iframe')
 const textarea = document.querySelector('textarea')
+const terminalElement = document.querySelector('.terminal')
 
 let webcontainersInstance
 
-async function installDependencies() {
+async function installDependencies(terminal) {
     const installProcess = await webcontainersInstance.spawn('npm', ['install'])
 
     installProcess.output.pipeTo(new WritableStream({
         write(data) {
-           console.log(data)
+            terminal.write(data)
         }
     }))
 
     return installProcess.exit
 }
 
-async function startDevServer() {
+async function startDevServer(terminal) {
     const serverProcess = await webcontainersInstance.spawn('npm', ['run', 'start'])
 
     serverProcess.output.pipeTo(new WritableStream({
-          write(data) {
-              console.log(data)
-          }
-      }))
+        write(data) {
+            terminal.write(data)
+        }
+    }))
 
     webcontainersInstance.on('server-ready', (port, url) => {
-        console.log(port, url)
         iframe.src = url
     })
 }
@@ -44,12 +46,17 @@ window.addEventListener('load', async () => {
         writeIndexJS('index.js', e.currentTarget.value)
     })
 
+    const terminal = new Terminal({
+        convertEol: true,
+    })
+    terminal.open(terminalElement)
+
     webcontainersInstance = await WebContainer.boot()
     await webcontainersInstance.mount(files)
 
-    await installDependencies()
+    await installDependencies(terminal)
 
-    startDevServer()
+    startDevServer(terminal)
 
     console.log('Window is loaded')
 })
